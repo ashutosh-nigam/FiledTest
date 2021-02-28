@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FiledTest.Data.DataModels
 {
-    public class Payment
+    public class PaymentInfo
     {
         [Key]
         public Guid Id { get; set; }
@@ -19,13 +19,8 @@ namespace FiledTest.Data.DataModels
         //public string SecurityCode { get; set; }
         [DataType(DataType.Currency)]
         public decimal Amount { get; set; }
-        public PaymentStatus Status { get; set; }
-
-        public enum PaymentStatus
-        {
-            Success,
-            Invalid,
-            Error
-        }
+        
+        public DateTime DateTime { get; set; }
+        public ICollection<PaymentStatus> PaymentStatuses { get; set; }
     }
 }

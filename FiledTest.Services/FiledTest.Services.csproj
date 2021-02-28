@@ -4,4 +4,15 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="Polly" Version="7.2.1" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FiledTest.Data\FiledTest.Data.csproj" />
+    <ProjectReference Include="..\FiledTest.PaymentGateway\FiledTest.PaymentGateway.csproj" />
+  </ItemGroup>
+
 </Project>
