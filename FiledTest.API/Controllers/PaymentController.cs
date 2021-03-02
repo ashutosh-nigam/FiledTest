@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FiledTest.API.Models;
 using FiledTest.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,25 @@ namespace FiledTest.API.Controllers
         public IList<Models.PaymentDTO> GetAll()
         {
             return mapper.Map<IList<Models.PaymentDTO>>(paymentService.GetPayments());
+        }
+
+        [HttpPost]
+        public PaymentStatusDTO Post(Models.PaymentDTO payment)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var paymentEntity = mapper.Map<Services.EntityModel.PaymentInfo>(payment);
+                    var status= mapper.Map<PaymentStatusDTO>(this.paymentService.MakePayment(paymentEntity).Result);
+                    return status;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            return null;
         }
     }
 }

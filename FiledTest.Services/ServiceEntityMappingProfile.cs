@@ -13,11 +13,11 @@ namespace FiledTest.Services
        public ServiceEntityMappingProfile()
         {
 
-            CreateMap<EntityModel.PaymentInfo, PaymentInfo>().ForMember(x => x.DateTime, m => m.MapFrom(x => DateTime.Now))
+            CreateMap<EntityModel.PaymentInfo, PaymentInfo>() //.ForMember(x => x.DateTime, m => m.MapFrom(x => DateTime.Now))
                 .ReverseMap();
             CreateMap<EntityModel.PaymentStatus, PaymentStatus>().ReverseMap();
-            CreateMap<EntityModel.PaymentInfo, FiledTest.PaymentGateway.PaymentRequest>();
-
+            CreateMap<EntityModel.PaymentInfo, FiledTest.PaymentGateway.PaymentRequest>().ReverseMap();
+            CreateMap<PaymentInfo, FiledTest.PaymentGateway.PaymentRequest>().ReverseMap();
         }
     }
 }

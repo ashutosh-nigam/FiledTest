@@ -16,8 +16,7 @@ namespace FiledTest.Data.DataModels
 
         // Can not save as per data security guidelines
         //public string ExpirationDate { get; set; }
-        //public string SecurityCode { get; set; }
-        [DataType(DataType.Currency)]
+        //public string SecurityCode { get; set; }       
         public decimal Amount { get; set; }
         
         public DateTime DateTime { get; set; }

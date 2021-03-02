@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using FiledTest.Data.DataModels;
 using FiledTest.PaymentGateway;
 using Microsoft.Extensions.Logging;
@@ -28,13 +29,13 @@ namespace FiledTest.Services
 
         public IQueryable<EntityModel.PaymentInfo> GetPayments()
         {
-            var payinfo=mapper.Map<IQueryable<EntityModel.PaymentInfo>>(dataContext.PaymentsInfo.AsQueryable());
-
+            var payinfo = dataContext.PaymentsInfo.AsQueryable().ProjectTo<EntityModel.PaymentInfo>(mapper.ConfigurationProvider).AsQueryable();
             return payinfo;
         }
 
-        public async void MakePayment(EntityModel.PaymentInfo paymentInfo)
+        public async Task<EntityModel.PaymentStatus> MakePayment(EntityModel.PaymentInfo paymentInfo)
         {
+            PaymentStatus paymentStatus = null;
             try
             {
                 logger.LogInformation("PaymentService.MakePayment: Starting Payment Processing");
@@ -43,6 +44,7 @@ namespace FiledTest.Services
                 this.dataContext.PaymentsInfo.Add(dbPaymentInfo);
                 this.dataContext.SaveChanges();
                 PaymentStatusUpdate(dbPaymentInfo.Id, Status.Initialized);
+                paymentStatus = new PaymentStatus() { PaymentInfoId = dbPaymentInfo.Id };
                 var paymentReqInfo = mapper.Map<FiledTest.PaymentGateway.PaymentRequest>(dbPaymentInfo);
                 //If the amount to be paid is less than £20, use ICheapPaymentGateway
                 if (paymentInfo.Amount < 20)
@@ -73,8 +75,12 @@ namespace FiledTest.Services
             }
             finally
             {
-                logger.LogInformation("PaymentService.MakePayment:");
+                logger.LogInformation("PaymentService.MakePayment:");                
             }
+            var status = dataContext.PaymentsStatuses.Where(x => x.PaymentInfoId == paymentStatus.PaymentInfoId).OrderByDescending(x => x.DateTime).AsQueryable()
+                    .ProjectTo<EntityModel.PaymentStatus>(mapper.ConfigurationProvider).FirstOrDefault();
+            return status;
+
         }
 
         private void PaymentBetween21To500(PaymentRequest paymentRequest)
@@ -108,7 +114,7 @@ namespace FiledTest.Services
         }
 
 
-        private async void PaymentStatusUpdate(Guid paymentId, Status status)
+        private void PaymentStatusUpdate(Guid paymentId, Status status)
         {
             this.dataContext.PaymentsStatuses.Add(new PaymentStatus()
             {
@@ -116,7 +122,7 @@ namespace FiledTest.Services
                 Status = status,
                 DateTime = DateTime.Now
             });
-            await this.dataContext.SaveChangesAsync();
+            this.dataContext.SaveChanges();
         }
     }
 }

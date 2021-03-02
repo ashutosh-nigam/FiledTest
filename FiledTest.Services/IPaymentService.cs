@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FiledTest.Services
 {
     public interface IPaymentService 
     {
-        void MakePayment(EntityModel.PaymentInfo paymentInfo);
+        Task<EntityModel.PaymentStatus> MakePayment(EntityModel.PaymentInfo paymentInfo);
         IQueryable<EntityModel.PaymentInfo> GetPayments();
     }
 }

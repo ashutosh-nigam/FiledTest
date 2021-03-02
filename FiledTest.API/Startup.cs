@@ -1,3 +1,5 @@
+using AutoMapper;
+using FiledTest.API.MappingProfile;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -33,7 +35,15 @@ namespace FiledTest.API
             {
                 conf.UseSqlServer(connectionString);
             });
-            services.AddAutoMapper(typeof(Startup));
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new Services.ServiceEntityMappingProfile());
+                cfg.AddProfile(new DTOMappingProfile());
+            });
+
+            IMapper mapper = config.CreateMapper();
+            services.AddSingleton(mapper);
+
             services.AddScoped<PaymentGateway.ICheapPaymentGateway, PaymentGateway.PyamentGateway>();
             services.AddScoped<PaymentGateway.IExpensivePaymentGateway, PaymentGateway.PyamentGateway>();
             services.AddScoped<FiledTest.Services.IPaymentService, FiledTest.Services.PaymentService>();

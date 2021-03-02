@@ -10,9 +10,13 @@ namespace FiledTest.API.MappingProfile
     public class DTOMappingProfile : Profile
     {
         public DTOMappingProfile()
-        {
+        {           
             CreateMap<Services.EntityModel.PaymentInfo, PaymentDTO>()
+            .ReverseMap();
+            CreateMap<Services.EntityModel.PaymentStatus, PaymentStatusDTO>()
             .ReverseMap();
         }
     }
+
+   
 }
