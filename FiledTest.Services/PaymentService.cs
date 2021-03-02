@@ -4,6 +4,7 @@ using FiledTest.PaymentGateway;
 using Microsoft.Extensions.Logging;
 using Polly;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -23,6 +24,13 @@ namespace FiledTest.Services
             this.expensivePaymentGateway = expensivePaymentGateway;
             this.cheapPaymentGateway = cheapPaymentGateway;
             this.mapper = mapper;
+        }
+
+        public IQueryable<EntityModel.PaymentInfo> GetPayments()
+        {
+            var payinfo=mapper.Map<IQueryable<EntityModel.PaymentInfo>>(dataContext.PaymentsInfo.AsQueryable());
+
+            return payinfo;
         }
 
         public async void MakePayment(EntityModel.PaymentInfo paymentInfo)
@@ -53,10 +61,10 @@ namespace FiledTest.Services
                             .Handle<HttpRequestException>()
                             .RetryAsync(3);
 
-                     await retryPolicy.ExecuteAsync(async () =>
-                     {
-                         this.expensivePaymentGateway.Payment(paymentReqInfo);
-                     });                    
+                    await retryPolicy.ExecuteAsync(async () =>
+                    {
+                        this.expensivePaymentGateway.Payment(paymentReqInfo);
+                    });
                 }
             }
             catch (Exception ex)
@@ -77,11 +85,12 @@ namespace FiledTest.Services
                 PaymentStatusUpdate(paymentRequest.Id, Status.Success);
             }
             catch (HttpRequestException ex)
-            {              
+            {
+                logger.LogError("PaymentService.PaymentBetween21To500: " + ex.Message);
                 PaymentStatusUpdate(paymentRequest.Id, Status.Error);
                 PaymentLessThan20(paymentRequest);
             }
-            
+
         }
 
         private void PaymentLessThan20(PaymentRequest paymentRequest)
@@ -93,6 +102,7 @@ namespace FiledTest.Services
             }
             catch (Exception ex)
             {
+                logger.LogError("PaymentService.PaymentLessThan20: " + ex.Message);
                 PaymentStatusUpdate(paymentRequest.Id, Status.Failed);
             }
         }

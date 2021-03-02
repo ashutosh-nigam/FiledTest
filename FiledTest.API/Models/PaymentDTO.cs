@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace FiledTest.Services.EntityModel
+namespace FiledTest.API.Models
 {
-    public class PaymentInfo
+    public class PaymentDTO
     {
-        public Guid Id { get; set; }
         public string CreditCardNumber { get; set; }
         public string CardHolder { get; set; }
         public string ExpirationDate { get; set; }
         public string SecurityCode { get; set; }
         public decimal Amount { get; set; }
-        public IList<PaymentStatus> PaymentStatus { get; set; }
     }
 }
