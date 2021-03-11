@@ -19,4 +19,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FiledTest.API\FiledTest.API.csproj" />
+  </ItemGroup>
+
 </Project>
